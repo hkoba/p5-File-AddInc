@@ -1,0 +1,6 @@
+name = "File-AddInc"
+# badges = ["travis"]
+authority="cpan:HKOBA"
+
+module_maker="ModuleBuildTiny"
+
