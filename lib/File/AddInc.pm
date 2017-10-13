@@ -22,6 +22,18 @@ sub import {
 sub declare_file_inc {
   my ($pack, $callpack, $filename) = @_;
 
+  my $libdir = $pack->libdir($callpack, $filename);
+
+  print STDERR "# use lib '$libdir'\n" if DEBUG;
+
+  lib->import($libdir);
+}
+
+sub libdir {
+  my ($pack, @caller) = @_;
+
+  my ($callpack, $filename) = @caller ? @caller : caller;
+
   (my $packfn = $callpack) =~ s,::,/,g;
   $packfn .= ".pm";
 
@@ -30,11 +42,7 @@ sub declare_file_inc {
   $absfn =~ /\Q$packfn\E\z/
     or Carp::croak("Can't handle this case! absfn=$absfn; packfn=$packfn");
 
-  my $libdir = substr($absfn, 0, length($absfn) - length($packfn));
-
-  print STDERR "# use lib '$libdir'\n" if DEBUG;
-
-  lib->import($libdir);
+  substr($absfn, 0, length($absfn) - length($packfn));
 }
 
 1;
