@@ -11,38 +11,47 @@ use Test::Kantan;
 use File::Basename;
 use File::Spec;
 
-#
-# This test reads t/20_import/*.d/testdesc and run specified tests.
-#
-# Each testdesc must have following format, line-by-line:
-#
-#   Target Module Filename (relative to testdesc directory)
-#   Expected (trailing) output...
-#
-# Each target module should emit result of File::AddInc->libdir and
-# rest of expected outputs.
+#----------------------------------------
+
+sub lines (@) { map {"$_\n"} @_ }
 
 describe "use File::AddInc", sub {
 
   (my $testName = $0) =~ s/\.t\z//;
 
-  foreach my $testDesc (<$testName/*.d/testdesc>) {
+  {
+    my $testDesc = "$testName/1.d";
+    my $testDir = File::Spec->rel2abs($testDesc);
+    my $targetFile = "MyApp/Deep/Runnable/Module.pm";
 
-    my $testDir = File::Spec->rel2abs(dirname($testDesc));
-
-    # First line is test target module (which must be runnable)
-    # Rest of lines are expected output.
-    my ($targetFile, @expect) = read_file_lines($testDesc);
-
-    describe "case $testDesc", sub {
+    describe "case $testDesc/$targetFile", sub {
 
       my $exe = File::Spec->catfile($testDir, $targetFile);
 
-      expect([qx($^X -I$FindBin::Bin/../lib $exe)])
-        ->to_be([map {"$_\n"} $testDir, @expect]);
+      it "should emit correct libdir and can use other lib (MyApp::Util)", sub {
+
+        expect([qx($^X -I$FindBin::Bin/../lib $exe)])
+          ->to_be([lines($testDir, qw/OK BAR/)]);
+      };
     };
   }
 
+  {
+    my $testDesc = "$testName/2.d";
+    my $testDir = File::Spec->rel2abs($testDesc);
+    my $targetFile = "scripts/mybar";
+
+    describe "case $testDesc/$targetFile", sub {
+
+      my $exe = File::Spec->catfile($testDir, $targetFile);
+
+      it "should resolve symlink, emit correct libdir even for obscure-dir and can use other lib", sub {
+
+        expect([qx($^X -I$FindBin::Bin/../lib $exe)])
+          ->to_be([lines("$testDir/obscure-lib-dir", qw/OK YES!/)]);
+      };
+    };
+  }
 };
 
 done_testing();
