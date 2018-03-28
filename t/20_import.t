@@ -39,7 +39,7 @@ describe "use File::AddInc", sub {
       my $exe = File::Spec->catfile($testDir, $targetFile);
 
       expect([qx($^X -I$FindBin::Bin/../lib $exe)])
-        ->to_be([map {"$_\n"} $testDir."/", @expect]);
+        ->to_be([map {"$_\n"} $testDir, @expect]);
     };
   }
 

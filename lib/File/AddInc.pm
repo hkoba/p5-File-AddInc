@@ -42,7 +42,7 @@ sub libdir {
   $absfn =~ /\Q$packfn\E\z/
     or Carp::croak("Can't handle this case! absfn=$absfn; packfn=$packfn");
 
-  substr($absfn, 0, length($absfn) - length($packfn));
+  substr($absfn, 0, length($absfn) - length($packfn) - 1);
 }
 
 1;
