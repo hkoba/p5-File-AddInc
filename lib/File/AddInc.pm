@@ -24,7 +24,7 @@ sub import {
 sub declare_file_inc {
   my ($pack, $callpack, $filename) = @_;
 
-  my $libdir = $pack->libdir($callpack, $filename);
+  my $libdir = libdir($pack, $callpack, $filename);
 
   print STDERR "# use lib '$libdir'\n" if DEBUG;
 
@@ -94,18 +94,72 @@ __END__
 
 =head1 NAME
 
-File::AddInc - find library directory of used file and add it to @INC
+File::AddInc - FindBin(+ use lib) alike for Runnable-Modules
 
 =head1 SYNOPSIS
 
-    package MyApp::Deep::Module;
-    use File::AddInc; # <-- This will add '../../' to @INC.
-    use MyApp::Util;  # So perl can find MyApp/Util.pm correctly.
+Suppose you want to make your module (MyApp::Deep::Runnable::Module)
+runnable(!) with shbang (C<#!perl>) and C<chmod a+x>.
+And you want to use other module (MyApp::Util) in same library directory.
+File::AddInc will locate your lib directory and modify @INC for you.
+
+
+    #!/usr/bin/env perl
+    package MyApp::Deep::Runnable::Module;
+
+    # use MyApp::Util; # This may fail because @INC can be wrong in many ways.
+
+    # So, use this to modify @INC.
+    use File::AddInc;
+
+    # Then perl can find MyApp/Util.pm correctly.
+    use MyApp::Util;
 
 =head1 DESCRIPTION
 
-File::AddInc finds library toplevel directory for given file and add it to @INC.
-This is useful when you directly used/executed the module.
+File::AddInc does similar task of L<FindBin> + L<lib>, but for Modules (F<*.pm>)
+instead of standalone scripts (F<*.pl>).
+Conceptually, this module inspects C<__FILE__>,
+trims C<__PACKAGE__> part of it to locate root of F<lib> directory
+and adds it to C<@INC>.
+
+
+=head1 CLASS METHODS
+
+=head2 C<libdir>
+X<libdir>
+
+  my $libdir = File::AddInc->libdir('MyApp::Foobar', "/somewhere/lib/MyApp/Foobar.pm");
+  # $libdir == "/somewhere/lib"
+
+  my $libdir = File::AddInc->libdir(caller);
+
+  my $libdir = File::AddInc->libdir;
+
+
+=head2 Note for MOP4Import users
+
+This module does *NOT* rely on L<MOP4Import::Declare>
+but designed to co-operate well with it. Actually,
+this module provides C<declare_file_inc> method.
+So, you can inherit 'File::AddInc'.
+
+  package MyExporter;
+  use MOP4Import::Declare -as_base, [base => 'File::AddInc'];
+
+And then you can use C<-file_inc> pragma like following:
+
+  use MyExporter -file_inc;
+
+=head1 CAVEATS
+
+Since this module compares C<__FILE__> with C<__PACKAGE__> in case
+sensitive manner, it may not work well with modules which relies case
+insensitive filesystems.
+
+=head1 SEE ALSO
+
+L<FindBin>, L<lib>, L<rlib>, L<blib>
 
 =head1 LICENSE
 
