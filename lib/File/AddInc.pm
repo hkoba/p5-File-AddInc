@@ -98,9 +98,9 @@ File::AddInc - FindBin(+ use lib) alike for Runnable-Modules
 
 =head1 SYNOPSIS
 
-Suppose you want to make your module (MyApp::Deep::Runnable::Module)
-runnable(!) with shbang (C<#!perl>) and C<chmod a+x>.
-And you want to use other module (MyApp::Util) in same library directory.
+Suppose you want to make your module (say F<MyApp/Deep/Runnable/Module.pm>)
+runnable(really! ;-) with shbang (C<#!perl>) and C<chmod a+x>.
+And you want to use other module (F<MyApp/Util.pm>) in the same library tree.
 File::AddInc will locate your lib directory and modify @INC for you.
 
 
@@ -119,8 +119,9 @@ File::AddInc will locate your lib directory and modify @INC for you.
 
 File::AddInc does similar task of L<FindBin> + L<lib>, but for Modules (F<*.pm>)
 instead of standalone scripts (F<*.pl>).
-Conceptually, this module inspects C<__FILE__>,
-trims C<__PACKAGE__> part of it to locate root of F<lib> directory
+Conceptually, this module locates root of F<lib> directory
+by inspect C<__FILE__>,
+trims C<__PACKAGE__> part from it to 
 and adds it to C<@INC>.
 
 
