@@ -7,3 +7,5 @@ module_maker="ModuleBuildTiny"
 readme_from="lib/File/AddInc.pm"
 
 static_install = "auto"
+
+badges = ['travis', 'metacpan']
