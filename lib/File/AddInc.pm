@@ -22,9 +22,11 @@ sub import {
 }
 
 sub declare_file_inc {
-  my ($pack, $callpack, $filename) = @_;
+  my ($pack, @caller) = @_;
 
-  my $libdir = libdir($pack, $callpack, $filename);
+  @caller = caller unless @caller;
+
+  my $libdir = libdir($pack, @caller);
 
   print STDERR "# use lib '$libdir'\n" if DEBUG;
 
@@ -170,7 +172,7 @@ this module provides C<declare_file_inc> method.
 So, you can inherit 'File::AddInc'.
 
   package MyExporter;
-  use MOP4Import::Declare -as_base, [base => 'File::AddInc'];
+  use MOP4Import::Declare -as_base, [parent => 'File::AddInc'];
 
 And then you can use C<-file_inc> pragma like following:
 
