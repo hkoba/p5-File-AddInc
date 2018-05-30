@@ -94,13 +94,15 @@ __END__
 
 =head1 NAME
 
-File::AddInc - FindBin(+ use lib) alike for Runnable-Modules
+File::AddInc - FindBin(+ use lib) alike for *.pm (instead of *.pl)
 
 =head1 SYNOPSIS
 
-Suppose you want to make your module (say F<MyApp/Deep/Runnable/Module.pm>)
-runnable(really! ;-) with shbang (C<#!perl>) and C<chmod a+x>.
-And you want to use other module (F<MyApp/Util.pm>) in the same library tree.
+Suppose you have a module (say F<MyApp/Deep/Runnable/Module.pm>)
+and want to make it runnable with shbang (C<#!perl>), C<chmod a+x>
+and symlink it from your F<~/bin> (Yes, I'm sane;-).
+In the module, you want to use some other module (F<MyApp/Util.pm>)
+in the same library tree.
 File::AddInc will locate your lib directory and modify @INC for you.
 
 
@@ -115,20 +117,42 @@ File::AddInc will locate your lib directory and modify @INC for you.
     # Then perl can find MyApp/Util.pm correctly.
     use MyApp::Util;
 
+    ...
+
 =head1 DESCRIPTION
 
 File::AddInc does similar task of L<FindBin> + L<lib>, but for Modules (F<*.pm>)
 instead of standalone scripts (F<*.pl>).
+
 Conceptually, this module locates root of F<lib> directory
-by inspect C<__FILE__>,
-trims C<__PACKAGE__> part from it to 
-and adds it to C<@INC>.
+through following steps.
+
+=over 4
+
+=item 1.
+
+Inspect C<__FILE__> (using L<caller()|perlfunc/caller>).
+
+=item 2.
+
+Resolve symbolic links.
+
+=item 3.
+
+Trim C<__PACKAGE__> part from it.
+
+=back
+
+Then adds it to C<@INC>.
 
 
 =head1 CLASS METHODS
 
-=head2 C<libdir>
+=head2 C<libdir($PACKNAME, $FILEPATH)>
 X<libdir>
+
+Trims C<$PACKNAME> portion from C<$FILEPATH>.
+When arguments are omitted, results from L<caller()|perlfunc/caller> is used.
 
   my $libdir = File::AddInc->libdir('MyApp::Foobar', "/somewhere/lib/MyApp/Foobar.pm");
   # $libdir == "/somewhere/lib"
