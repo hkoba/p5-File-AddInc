@@ -2,8 +2,9 @@ package File::AddInc;
 use 5.008001;
 use strict;
 use warnings;
+use mro qw/c3/;
 
-our $VERSION = "0.01";
+our $VERSION = "0.001";
 
 use File::Spec;
 use File::Basename;
