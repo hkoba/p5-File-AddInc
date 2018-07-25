@@ -1,16 +1,11 @@
 [![Build Status](https://travis-ci.org/hkoba/p5-File-AddInc.svg?branch=master)](https://travis-ci.org/hkoba/p5-File-AddInc) [![MetaCPAN Release](https://badge.fury.io/pl/File-AddInc.svg)](https://metacpan.org/release/File-AddInc)
 # NAME
 
-File::AddInc - FindBin(+ use lib) alike for \*.pm (instead of \*.pl)
+File::AddInc - FindBin(+ use lib) alike for \*.pm modulino (instead of \*.pl)
 
 # SYNOPSIS
 
-Suppose you have a module (say `MyApp/Deep/Runnable/Module.pm`)
-and want to make it runnable with shbang (`#!perl`), `chmod a+x`
-and symlink it from your `~/bin` (Yes, I'm sane;-).
-In the module, you want to use some other module (`MyApp/Util.pm`)
-in the same library tree.
-File::AddInc will locate your lib directory and modify @INC for you.
+In file `MyApp/Deep/Runnable/Module.pm`:
 
     #!/usr/bin/env perl
     package MyApp::Deep::Runnable::Module;
@@ -25,9 +20,19 @@ File::AddInc will locate your lib directory and modify @INC for you.
 
     ...
 
+Suppose you have a module like above
+and want to make it runnable and symlink it from your `~/bin`
+(Yes, I'm sane;-).
+In the module, you want to use some other module (`MyApp/Util.pm`)
+in the same library tree.
+File::AddInc will locate your lib directory and modify @INC for you.
+
 # DESCRIPTION
 
-File::AddInc does similar task of [FindBin](https://metacpan.org/pod/FindBin) + [lib](https://metacpan.org/pod/lib), but for Modules (`*.pm`)
+File::AddInc is a `@INC` tuner for
+[Modulino](http://www.drdobbs.com/scripts-as-modules/184416165).
+
+It does similar task of [FindBin](https://metacpan.org/pod/FindBin) + [lib](https://metacpan.org/pod/lib), but for Modules (`*.pm`)
 instead of standalone scripts (`*.pl`).
 
 Conceptually, this module locates root of `lib` directory
@@ -57,14 +62,14 @@ When arguments are omitted, results from [caller()](https://metacpan.org/pod/per
 ## Note for MOP4Import users
 
 This module does \*NOT\* rely on [MOP4Import::Declare](https://metacpan.org/pod/MOP4Import::Declare)
-but designed to co-operate well with it. Actually,
+but designed to work well with it. Actually,
 this module provides `declare_file_inc` method.
-So, you can inherit 'File::AddInc'.
+So, you can inherit 'File::AddInc' to reuse this pragma.
 
     package MyExporter;
     use MOP4Import::Declare -as_base, [parent => 'File::AddInc'];
 
-And then you can use `-file_inc` pragma like following:
+Then you can use `-file_inc` pragma like following:
 
     use MyExporter -file_inc;
 
