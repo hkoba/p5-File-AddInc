@@ -14,24 +14,59 @@ use Carp ();
 
 use constant DEBUG => $ENV{DEBUG_MOP4IMPORT};
 
+#
+# Limited version of MOP4Import::Declare#import()
+#
 sub import {
-  my ($pack) = @_;
+  my ($pack, @pragma) = @_;
 
-  my ($callpack, $filename, $line) = caller;
+  my $opts = +{};
 
-  $pack->declare_file_inc($callpack, $filename);
+  $opts->{caller} = [caller];
+  ($opts->{callpack}, $opts->{filename}, $opts->{line})
+    = @{$opts->{caller}};
+
+  @pragma = (-file_inc) unless @pragma;
+
+  foreach my $pragma (@pragma) {
+    $pragma =~ /^-(\w+)$/
+      or Carp::croak "Unsupported pragma: $pragma";
+
+    my $sub = $pack->can("declare_$1")
+      or Carp::croak "Unknown pragma: $1";
+
+    $sub->($pack, $opts);
+  }
 }
 
 sub declare_file_inc {
-  my ($pack, @caller) = @_;
+  my ($pack, $opts, $filename) = @_;
 
-  @caller = caller unless @caller;
+  # Limited emulation of m4i_args()
+  my $callpack = ref $opts ? $opts->{callpack} : $opts;
+  $filename //= $opts->{filename} if ref $opts;
 
-  my $libdir = libdir($pack, @caller);
+  my $libdir = libdir($pack, $callpack, $filename);
 
   print STDERR "# use lib '$libdir'\n" if DEBUG;
 
   lib->import($libdir);
+}
+
+sub declare_local_lib {
+  my ($pack, $opts, $filename) = @_;
+
+  # Limited emulation of m4i_args()
+  my $callpack = ref $opts ? $opts->{callpack} : $opts;
+  $filename //= $opts->{filename} if ref $opts;
+
+  my $libdir = libdir($pack, $callpack, $filename);
+
+  my $local_lib = dirname($libdir)."/local/lib/perl5";
+
+  print STDERR "# use lib '$libdir', '$local_lib'\n" if DEBUG;
+
+  lib->import($libdir, $local_lib);
 }
 
 sub libdir {
