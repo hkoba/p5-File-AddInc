@@ -20,11 +20,10 @@ subtest q{use File::AddInc qw($libdir)}, sub {
 };
 
 subtest q{use File::AddInc [libdir_var => qw($libdir)]}, sub {
-  my $testDesc = "$testName/2.d";
-  my $testDir = File::Spec->rel2abs($testDesc);
-  my $targetFile = "MyApp.pm";
+  my $testDir = File::Spec->rel2abs($testName);
+  my $targetFile = "MyApp2.pm";
 
-  is qx($^X -I$distDir/lib $testDir/MyApp.pm), "FOObar\n", "\$libvar is set";
+  is qx($^X -I$distDir/lib $testDir/$targetFile), "FOObar\n", "\$libvar is set";
 
 };
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 package
-  MyApp;
+  MyApp2;
 use strict;
 use warnings;
 
