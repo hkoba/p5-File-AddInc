@@ -82,6 +82,25 @@ sub declare_local_lib {
   lib->import($libdir, $local_lib);
 }
 
+sub declare_libdir_var {
+  my ($pack, $opts, $varname) = @_;
+
+  my $callpack = ref $opts ? $opts->{callpack} : $opts;
+  my $filename = $opts->{filename};
+
+  my $libdir = libdir($pack, $callpack, $filename);
+
+  $varname =~ s/^\$//;
+
+  my $fullvarname = join("::", $callpack, $varname);
+
+  my $glob = do {no strict qw/refs/; \*{$fullvarname}};
+
+  print STDERR "# set \$$fullvarname = '$libdir'\n" if DEBUG;
+
+  *$glob = \$libdir;
+}
+
 sub libdir {
   my ($pack, @caller) = @_;
 
