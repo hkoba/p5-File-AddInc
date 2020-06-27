@@ -70,11 +70,7 @@ sub declare_file_inc {
 sub declare_local_lib {
   (my $pack, my Opts $opts) = @_;
 
-  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
-
-  my $local_lib = dirname($libdir)."/local/lib/perl5";
-
-  add_inc_if_necessary($pack, $libdir, $local_lib);
+  $pack->declare_these_libdirs($opts, '', [dirname => "/local/lib/perl5"]);
 }
 
 sub add_inc_if_necessary {
