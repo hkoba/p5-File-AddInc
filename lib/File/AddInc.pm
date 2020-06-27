@@ -14,13 +14,20 @@ use Carp ();
 
 use constant DEBUG => $ENV{DEBUG_MOP4IMPORT};
 
+{
+  package
+    File::AddInc::Opts;
+  use fields qw/caller callpack filename line/;
+}
+sub Opts () {'File::AddInc::Opts'}
+
 #
 # Limited version of MOP4Import::Declare#import()
 #
 sub import {
   my ($pack, @pragma) = @_;
 
-  my $opts = +{};
+  my Opts $opts = +{};
 
   $opts->{caller} = [caller];
   ($opts->{callpack}, $opts->{filename}, $opts->{line})
@@ -53,46 +60,53 @@ sub import {
 }
 
 sub declare_file_inc {
-  my ($pack, $opts, $filename) = @_;
+  (my $pack, my Opts $opts) = @_;
 
-  # Limited emulation of m4i_args()
-  my $callpack = ref $opts ? $opts->{callpack} : $opts;
-  $filename //= $opts->{filename} if ref $opts;
+  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
 
-  my $libdir = libdir($pack, $callpack, $filename);
-
-  print STDERR "# use lib '$libdir'\n" if DEBUG;
-
-  lib->import($libdir);
+  add_inc_if_necessary($pack, $libdir);
 }
 
 sub declare_local_lib {
-  my ($pack, $opts, $filename) = @_;
+  (my $pack, my Opts $opts) = @_;
 
-  # Limited emulation of m4i_args()
-  my $callpack = ref $opts ? $opts->{callpack} : $opts;
-  $filename //= $opts->{filename} if ref $opts;
-
-  my $libdir = libdir($pack, $callpack, $filename);
+  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
 
   my $local_lib = dirname($libdir)."/local/lib/perl5";
 
-  print STDERR "# use lib '$libdir', '$local_lib'\n" if DEBUG;
+  add_inc_if_necessary($pack, $libdir, $local_lib);
+}
 
-  lib->import($libdir, $local_lib);
+sub add_inc_if_necessary {
+  my ($pack, @libdir) = @_;
+
+  if (my @necessary = grep {
+
+    my $dir = $_;
+    -d $dir and not grep {$dir eq $_} @INC;
+
+  } @libdir) {
+
+    print STDERR "# use lib ", join(", ", map(qq{'$_'}, @necessary))
+      , "\n" if DEBUG;
+
+    lib->import(@necessary);
+
+  } else {
+
+    print STDERR "# No need to add libs: ", join(", ", map(qq{'$_'}, @libdir))
+      , "\n" if DEBUG;
+  }
 }
 
 sub declare_libdir_var {
-  my ($pack, $opts, $varname) = @_;
+  (my $pack, my Opts $opts, my $varname) = @_;
 
-  my $callpack = ref $opts ? $opts->{callpack} : $opts;
-  my $filename = $opts->{filename};
-
-  my $libdir = libdir($pack, $callpack, $filename);
+  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
 
   $varname =~ s/^\$//;
 
-  my $fullvarname = join("::", $callpack, $varname);
+  my $fullvarname = join("::", $opts->{callpack}, $varname);
 
   my $glob = do {no strict qw/refs/; \*{$fullvarname}};
 
