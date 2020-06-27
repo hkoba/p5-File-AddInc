@@ -11,8 +11,17 @@ my $distDir = dirname(dirname(dirname($FindBin::Bin)));
 
 # print "distDir=$distDir\ntestName=$testName\n";
 
-subtest "1.d", sub {
+subtest q{use File::AddInc qw($libdir)}, sub {
   my $testDesc = "$testName/1.d";
+  my $testDir = File::Spec->rel2abs($testDesc);
+  my $targetFile = "MyApp.pm";
+
+  is qx($^X -I$distDir/lib $testDir/MyApp.pm), "FOObar\n", "\$libvar is set";
+
+};
+
+subtest q{use File::AddInc [libdir_var => qw($libdir)]}, sub {
+  my $testDesc = "$testName/2.d";
   my $testDir = File::Spec->rel2abs($testDesc);
   my $targetFile = "MyApp.pm";
 
