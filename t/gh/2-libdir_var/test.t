@@ -16,7 +16,6 @@ subtest q{use File::AddInc qw($libdir)}, sub {
   my $targetFile = "MyApp.pm";
 
   is qx($^X -I$distDir/lib $testDir/$targetFile), "FOObar\n", "\$libvar is set";
-
 };
 
 subtest q{use File::AddInc [libdir_var => qw($libdir)]}, sub {
@@ -24,7 +23,13 @@ subtest q{use File::AddInc [libdir_var => qw($libdir)]}, sub {
   my $targetFile = "MyApp2.pm";
 
   is qx($^X -I$distDir/lib $testDir/$targetFile), "FOObar\n", "\$libvar is set";
+};
 
+subtest q{use File::AddInc [these_libdirs => 'etc', q{}, 'perl5']}, sub {
+  my $testDir = File::Spec->rel2abs($testName);
+  my $targetFile = "MyApp3.pm";
+
+  is qx($^X -I$distDir/lib $testDir/$targetFile), "FOObar\n", "\$libvar is set";
 };
 
 done_testing();

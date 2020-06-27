@@ -115,6 +115,46 @@ sub declare_libdir_var {
   *$glob = \$libdir;
 }
 
+sub declare_these_libdirs {
+  (my $pack, my Opts $opts, my @dirSpec) = @_;
+
+  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
+
+  my @libdir = map {
+    if (ref $_) {
+
+      my ($kind, @rest) = @$_;
+
+      my $sub = $pack->can("libdir_to_$kind")
+        or Carp::croak "Unknown libdir spec: $kind";
+
+      my $realPrefix = $sub->($pack, $libdir);
+
+      File::Spec->catfile($realPrefix, map {split(m{/}, $_)} @rest);
+
+    }
+    # elsif (/\%s/) {
+    #   File::Spec->catfile(split m{/}, sprintf($_, $libdir));
+    # }
+    else {
+
+      File::Spec->catfile($libdir, split(m{/}, $_));
+    }
+  } @dirSpec;
+
+  add_inc_if_necessary($pack, @libdir);
+}
+
+sub libdir_to_libdir {
+  my ($pack, $libdir) = @_;
+  $libdir;
+}
+
+sub libdir_to_dirname {
+  my ($pack, $libdir) = @_;
+  dirname($libdir);
+}
+
 sub libdir {
   my ($pack, @caller) = @_;
 
