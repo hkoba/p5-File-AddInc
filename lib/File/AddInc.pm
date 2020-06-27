@@ -28,14 +28,27 @@ sub import {
 
   @pragma = (-file_inc) unless @pragma;
 
-  foreach my $pragma (@pragma) {
-    $pragma =~ /^-(\w+)$/
-      or Carp::croak "Unsupported pragma: $pragma";
+  foreach my $pragmaSpec (@pragma) {
 
-    my $sub = $pack->can("declare_$1")
-      or Carp::croak "Unknown pragma: $1";
+    my ($pragma, @args) = do {
+      if (ref $pragmaSpec eq 'ARRAY') {
+        @$pragmaSpec
+      }
+      elsif (not ref $pragmaSpec and $pragmaSpec =~ /^-(\w+)$/) {
+        $1
+      }
+      elsif (not ref $pragmaSpec and $pragmaSpec =~ /^\$\w+\z/) {
+        (libdir_var => $pragmaSpec)
+      }
+      else {
+        Carp::croak "Unsupported pragma: $pragmaSpec";
+      }
+    };
 
-    $sub->($pack, $opts);
+    my $sub = $pack->can("declare_$pragma")
+      or Carp::croak "Unknown pragma: $pragma";
+
+    $sub->($pack, $opts, @args);
   }
 }
 
