@@ -29,7 +29,15 @@ subtest q{use File::AddInc [these_libdirs => 'etc', q{}, 'perl5']}, sub {
   my $testDir = File::Spec->rel2abs($testName);
   my $targetFile = "MyApp3.pm";
 
-  is qx($^X -I$distDir/lib $testDir/$targetFile), "FOObar\n", "\$libvar is set";
+  is qx($^X -I$distDir/lib $testDir/$targetFile), "FOObar\n", "these_libdirs works";
 };
+
+subtest q{use MyExporter 'etc', q{}, 'perl5'}, sub {
+  my $testDir = File::Spec->rel2abs($testName);
+  my $targetFile = "MyApp4.pm";
+
+  is qx($^X -I$distDir/lib -I$testDir/other_lib $testDir/$targetFile), "FOObar\n", "MyExporter works";
+};
+
 
 done_testing();
