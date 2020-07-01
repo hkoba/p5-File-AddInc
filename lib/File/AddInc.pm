@@ -18,6 +18,15 @@ use constant DEBUG => $ENV{DEBUG_MOP4IMPORT};
   package
     File::AddInc::Opts;
   use fields qw/caller callpack filename line/;
+
+  # This Opts->new does not bless the hash.
+  sub new {
+    my ($pack, %opts) = @_;
+    my __PACKAGE__ $opts = \%opts;
+    ($opts->{callpack}, $opts->{filename}, $opts->{line})
+      = @{$opts->{caller}};
+    $opts;
+  }
 }
 sub Opts () {'File::AddInc::Opts'}
 
@@ -27,11 +36,7 @@ sub Opts () {'File::AddInc::Opts'}
 sub import {
   my ($pack, @pragma) = @_;
 
-  my Opts $opts = +{};
-
-  $opts->{caller} = [caller];
-  ($opts->{callpack}, $opts->{filename}, $opts->{line})
-    = @{$opts->{caller}};
+  my Opts $opts = $pack->Opts->new(caller => [caller]);
 
   @pragma = (-file_inc) unless @pragma;
 
