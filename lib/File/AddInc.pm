@@ -69,7 +69,7 @@ sub declare_file_inc {
 
   my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
 
-  add_inc_if_necessary($pack, $libdir);
+  $pack->add_inc_if_necessary($libdir);
 }
 
 sub declare_local_lib {
