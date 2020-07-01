@@ -40,6 +40,12 @@ sub import {
 
   @pragma = (-file_inc) unless @pragma;
 
+  $pack->dispatch_declare($opts, @pragma);
+}
+
+sub dispatch_declare {
+  (my $pack, my Opts $opts, my @pragma) = @_;
+
   foreach my $pragmaSpec (@pragma) {
 
     my ($pragma, @args) = do {
