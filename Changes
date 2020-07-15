@@ -2,6 +2,9 @@ Revision history for Perl extension File-AddInc
 
 {{$NEXT}}
 
+0.001_01 2020-07-15T04:23:07Z
+    - GH-2 - Add more subpragmas: qw($libdir), [libdir_var => qw($libdir)] and [these_libdirs]
+
 0.001 2018-07-25T09:13:25Z
 
     - Initial release
