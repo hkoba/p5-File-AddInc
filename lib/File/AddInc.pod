@@ -166,7 +166,7 @@ In other words,
 
 is a shorthand form of below:
 
-  use File::AddInc [these_libdirs => '', [dirname => "/local/lib/perl5"]];
+  use File::AddInc [these_libdirs => '', [dirname => "local/lib/perl5"]];
 
 =head2 C<< qw($var) >>
 X<$var>
@@ -202,9 +202,9 @@ This finds libdir from caller, generate a list of directories from given C<@dirS
 
 For example, following code:
 
-  use File::AddInc [these_libdirs => 'etc', '', [dirname => "/local/lib/perl5"]];
+  use File::AddInc [these_libdirs => 'etc', '', [dirname => "local/lib/perl5"]];
 
-adds C<$libdir/etc>, C<$libdir/> and C<dirname($libdir)."/local/lib/perl5")> to C<@INC>.
+adds C<$libdir/etc>, C<$libdir> and C<dirname($libdir)."/local/lib/perl5")> to C<@INC>.
 
 Each item of C<@dirSpec> can be one of following two forms:
 
