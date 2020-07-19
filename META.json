@@ -70,7 +70,7 @@
          "web" : "https://github.com/hkoba/p5-File-AddInc"
       }
    },
-   "version" : "0.001_01",
+   "version" : "0.002",
    "x_authority" : "cpan:HKOBA",
    "x_contributors" : [
       "Kobayasi, Hiroaki <hkoba@ssri.com>"
