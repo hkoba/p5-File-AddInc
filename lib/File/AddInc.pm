@@ -174,6 +174,10 @@ sub libdir {
     ? resolve_symlink($pack, $filename)
     : $filename;
 
+  if ($^O eq 'MSWin32') {
+    $packfn =~ s#/#\\#g;
+  }
+
   my $absfn = File::Spec->rel2abs($realFn);
 
   $absfn =~ /\Q$packfn\E\z/
