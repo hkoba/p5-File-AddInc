@@ -38,9 +38,11 @@ sub import {
 
   my Opts $opts = $pack->Opts->new(caller => [caller]);
 
-  @pragma = (-file_inc) unless @pragma;
+  $pack->dispatch_declare($opts, $pack->always_exports, @pragma);
+}
 
-  $pack->dispatch_declare($opts, @pragma);
+sub always_exports {
+  (-file_inc)
 }
 
 sub dispatch_declare {
