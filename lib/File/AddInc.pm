@@ -17,7 +17,7 @@ use constant DEBUG => $ENV{DEBUG_MOP4IMPORT};
 {
   package
     File::AddInc::Opts;
-  use fields qw/caller callpack filename line/;
+  use fields qw/caller callpack filename line stash/;
 
   # This Opts->new does not bless the hash.
   sub new {
@@ -72,10 +72,16 @@ sub dispatch_declare {
   }
 }
 
+sub get_libdir {
+  (my $pack, my Opts $opts) = @_;
+  $opts->{stash}{$pack}{libdir}
+    //= libdir($pack, $opts->{callpack}, $opts->{filename});
+}
+
 sub declare_file_inc {
   (my $pack, my Opts $opts) = @_;
 
-  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
+  my $libdir = $pack->get_libdir($opts);
 
   $pack->add_inc_if_necessary($libdir);
 }
@@ -111,7 +117,7 @@ sub add_inc_if_necessary {
 sub declare_libdir_var {
   (my $pack, my Opts $opts, my $varname) = @_;
 
-  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
+  my $libdir = $pack->get_libdir($opts);
 
   $varname =~ s/^\$//;
 
@@ -127,7 +133,7 @@ sub declare_libdir_var {
 sub declare_these_libdirs {
   (my $pack, my Opts $opts, my @dirSpec) = @_;
 
-  my $libdir = libdir($pack, $opts->{callpack}, $opts->{filename});
+  my $libdir = $pack->get_libdir($opts);
 
   my @libdir = map {
     if (ref $_) {
