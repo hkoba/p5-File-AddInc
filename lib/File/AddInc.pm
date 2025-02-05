@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use mro qw/c3/;
 
-our $VERSION = "0.002";
+our $VERSION = "0.003";
 
 use File::Spec;
 use File::Basename;

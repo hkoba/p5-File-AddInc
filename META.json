@@ -4,7 +4,7 @@
       "Kobayasi, Hiroaki <buribullet@gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.10, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "Minilla/v3.1.23, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "unknown"
    ],
@@ -66,15 +66,16 @@
       "homepage" : "https://github.com/hkoba/p5-File-AddInc",
       "repository" : {
          "type" : "git",
-         "url" : "git://github.com/hkoba/p5-File-AddInc.git",
+         "url" : "https://github.com/hkoba/p5-File-AddInc.git",
          "web" : "https://github.com/hkoba/p5-File-AddInc"
       }
    },
-   "version" : "0.002",
+   "version" : "0.003",
    "x_authority" : "cpan:HKOBA",
    "x_contributors" : [
+      "Alexandr Ciornii <alexchorny@gmail.com>",
       "Kobayasi, Hiroaki <hkoba@ssri.com>"
    ],
-   "x_serialization_backend" : "JSON::PP version 4.04",
+   "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }
